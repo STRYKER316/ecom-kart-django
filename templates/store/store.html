@@ -124,7 +124,6 @@
     <header class="border-bottom mb-4 pb-3">
             <div class="form-inline">
                 <span class="mr-md-auto"><b>{{ products_count }}</b> Items found </span>
-
             </div>
     </header><!-- sect-heading -->
 
@@ -134,12 +133,12 @@
             <figure class="card card-product-grid">
                 <div class="img-wrap">
 
-                    <img src="{{ product.image.url }}">
+                    <a href="{{ product.get_url }}"><img src="{{ product.image.url }}"></a>
 
                 </div> <!-- img-wrap.// -->
                 <figcaption class="info-wrap">
                     <div class="fix-height">
-                        <a href="./product-detail.html" class="title">{{ product.product_name }}</a>
+                        <a href="{{ product.get_url }}" class="title">{{ product.product_name }}</a>
                         <div class="price-wrap mt-2">
                             <span class="price">$ {{ product.price }}</span>
                         </div> <!-- price-wrap.// -->
