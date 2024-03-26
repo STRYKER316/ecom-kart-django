@@ -127,3 +127,7 @@ STATIC_ROOT = BASE_DIR/'static'
 STATICFILES_DIRS = [
     'ecom_kart/static',
 ]
+
+
+# Custom User model
+AUTH_USER_MODEL = 'accounts.Account'
