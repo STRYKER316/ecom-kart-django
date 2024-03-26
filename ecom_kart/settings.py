@@ -129,5 +129,12 @@ STATICFILES_DIRS = [
 ]
 
 
+# Media files Configuration
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = BASE_DIR/'media'
+
+
 # Custom User model
 AUTH_USER_MODEL = 'accounts.Account'
