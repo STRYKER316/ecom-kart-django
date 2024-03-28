@@ -1,4 +1,5 @@
 from django.shortcuts import redirect, render
+from django.contrib import messages
 
 from .models import Account
 
@@ -7,6 +8,8 @@ from .forms import RegistrationForm
 # Create your views here.
 
 def register(reuqest):
+    form = None
+
     if reuqest.method == 'POST':
         form = RegistrationForm(reuqest.POST)
 
@@ -27,6 +30,10 @@ def register(reuqest):
             )
             user.phone_number = phone_number
             user.save()
+
+            messages.success(reuqest, 'Registration Successful')
+
+            return redirect('register')
 
     # GET Request
     else:
