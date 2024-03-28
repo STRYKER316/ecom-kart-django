@@ -1,5 +1,6 @@
 from django.shortcuts import redirect, render
-from django.contrib import messages
+from django.contrib import messages, auth
+from django.contrib.auth.decorators import login_required
 
 from .models import Account
 
@@ -47,8 +48,26 @@ def register(reuqest):
 
 
 def login(reuqest):
+    if reuqest.method == 'POST':
+        email = reuqest.POST['email']
+        password = reuqest.POST['password']
+
+        user = auth.authenticate(email=email, password=password)
+
+        if user:
+            auth.login(reuqest, user)
+            # messages.success(reuqest, 'You are now logged in')
+            return redirect('home')
+        else:
+            messages.error(reuqest, 'Invalid login credentials')
+            return redirect('login')
+
+    # GET Request
     return render(reuqest, 'accounts/login.html')
 
 
+@login_required(login_url='login')
 def logout(reuqest):
-    return render()
+    auth.logout(reuqest)
+    messages.success(reuqest, 'You are now logged out')
+    return redirect('login')
