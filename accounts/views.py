@@ -15,11 +15,11 @@ from .forms import RegistrationForm
 
 # Create your views here.
 
-def register(reuqest):
+def register(request):
     form = None
 
-    if reuqest.method == 'POST':
-        form = RegistrationForm(reuqest.POST)
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST)
 
         if form.is_valid():
             first_name = form.cleaned_data['first_name']
@@ -40,7 +40,7 @@ def register(reuqest):
             user.save()
 
             # User Activation
-            current_site = get_current_site(reuqest)
+            current_site = get_current_site(request)
             mail_subject = 'Please activate your account'
             message = render_to_string('accounts/account_verification_email.html', {
                 'user': user,
@@ -63,38 +63,38 @@ def register(reuqest):
         'form': form
     }
 
-    return render(reuqest, 'accounts/register.html', context)
+    return render(request, 'accounts/register.html', context)
 
 
-def login(reuqest):
-    if reuqest.method == 'POST':
-        email = reuqest.POST['email']
-        password = reuqest.POST['password']
+def login(request):
+    if request.method == 'POST':
+        email = request.POST['email']
+        password = request.POST['password']
 
         user = auth.authenticate(email=email, password=password)
 
         if user:
-            auth.login(reuqest, user)
-            messages.success(reuqest, 'You are now logged in')
+            auth.login(request, user)
+            messages.success(request, 'You are now logged in')
             return redirect('dashboard')
         else:
-            messages.error(reuqest, 'Invalid login credentials')
+            messages.error(request, 'Invalid login credentials')
             return redirect('login')
 
     # GET Request
-    return render(reuqest, 'accounts/login.html')
+    return render(request, 'accounts/login.html')
 
 
 @login_required(login_url='login')
-def logout(reuqest):
-    auth.logout(reuqest)
-    messages.success(reuqest, 'You are now logged out')
+def logout(request):
+    auth.logout(request)
+    messages.success(request, 'You are now logged out')
     return redirect('login')
 
 
 @login_required(login_url='login')
-def dashboard(reuqest):
-    return render(reuqest, 'accounts/dashboard.html')
+def dashboard(request):
+    return render(request, 'accounts/dashboard.html')
 
 
 def activate(request, uidb64, token):
@@ -113,3 +113,72 @@ def activate(request, uidb64, token):
 
     messages.error(request, 'Invalid activation link')
     return redirect('register')
+
+
+def forget_password(request):
+    if request.method == 'POST':
+        email = request.POST['email']
+
+        if Account.objects.filter(email=email).exists():
+            user = Account.objects.get(email__exact=email)
+
+            # Password Reset
+            current_site = get_current_site(request)
+            mail_subject = 'Reset your password'
+            message = render_to_string('accounts/reset_password_email.html', {
+                'user': user,
+                'domain': current_site,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': default_token_generator.make_token(user)
+            })
+
+            to_email = email
+            send_email = EmailMessage(mail_subject, message, to=[to_email])
+            send_email.send()
+
+            messages.success(request, 'Password reset email has been sent to your email address')
+            return redirect('login')
+
+        else:
+            messages.error(request, 'Account does not exist')
+            return redirect('forget_password')
+
+    return render(request, 'accounts/forget_password.html')
+
+
+def reset_password_validate(request, uidb64, token):
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = Account._default_manager.get(pk=uid)
+
+    except (TypeError, ValueError, OverflowError, Account.DoesNotExist):
+        user = None
+
+    if user != None and default_token_generator.check_token(user, token):
+        request.session['uid'] = uid
+        messages.success(request, 'Please reset your password')
+        return redirect('reset_password')
+    else:
+        messages.error(request, 'This link has been expired')
+        return redirect('login')
+
+
+def reset_password(request):
+    if request.method == 'POST':
+        password = request.POST['password']
+        confirm_password = request.POST['confirm_password']
+
+        if password == confirm_password:
+            uid = request.session.get('uid')
+            user = Account.objects.get(pk=uid)
+            user.set_password(password)
+            user.save()
+            messages.success(request, 'Password reset successful')
+            return redirect('login')
+
+        else:
+            messages.error(request, 'Passwords do not match')
+            return redirect('reset_password')
+
+    # GET request
+    return render(request, 'accounts/reset_password.html')
