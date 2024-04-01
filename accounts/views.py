@@ -56,8 +56,8 @@ def login(reuqest):
 
         if user:
             auth.login(reuqest, user)
-            # messages.success(reuqest, 'You are now logged in')
-            return redirect('home')
+            messages.success(reuqest, 'You are now logged in')
+            return redirect('dashboard')
         else:
             messages.error(reuqest, 'Invalid login credentials')
             return redirect('login')
@@ -71,3 +71,8 @@ def logout(reuqest):
     auth.logout(reuqest)
     messages.success(reuqest, 'You are now logged out')
     return redirect('login')
+
+
+@login_required(login_url='login')
+def dashboard(reuqest):
+    return render(reuqest, 'accounts/dashboard.html')
