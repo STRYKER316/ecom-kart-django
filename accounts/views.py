@@ -53,9 +53,7 @@ def register(reuqest):
             send_email = EmailMessage(mail_subject, message, to=[to_email])
             send_email.send()
 
-            messages.success(reuqest, 'Registration Successful')
-
-            return redirect('register')
+            return redirect('/accounts/login/?command=verification&email=+email')
 
     # GET Request
     else:
