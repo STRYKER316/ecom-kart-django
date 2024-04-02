@@ -79,11 +79,38 @@ def login(request):
             try:
                 cart = Cart.objects.get(cart_id=_get_cart_id(request))
                 is_cart_item_exists = CartItem.objects.filter(cart=cart).exists()
+
                 if is_cart_item_exists:
                     cart_item = CartItem.objects.filter(cart=cart)
+                    # Getting the product_variation by cart_id
+                    product_variation = []
                     for item in cart_item:
-                        item.user = user
-                        item.save()
+                        variation = item.variations.all()
+                        product_variation.append(list(variation))
+
+                    # Get the cart items from the user to access the product variations
+                    cart_item = CartItem.objects.filter(user=user)
+                    exisiting_variations_list = []
+                    id = []
+                    for item in cart_item:
+                        existing_variation = item.variations.all()
+                        exisiting_variations_list.append(list(existing_variation))
+                        id.append(item.id)
+
+                    # Check if the product_variation is in the exisiting_variations_list
+                    for product in product_variation:
+                        if product in exisiting_variations_list:
+                            index = exisiting_variations_list.index(product)
+                            item_id = id[index]
+                            item = CartItem.objects.get(id=item_id)
+                            item.quantity += 1
+                            item.user = user
+                            item.save()
+                        else:
+                            cart_item = CartItem.objects.filter(cart=cart)
+                            for item in cart_item:
+                                item.user = user
+                                item.save()
             except:
                 pass
 
