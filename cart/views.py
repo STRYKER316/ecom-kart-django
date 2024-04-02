@@ -1,6 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib.auth.decorators import login_required
 
 from .models import Cart, CartItem
 from store.models import Product, Variation
@@ -136,6 +137,7 @@ def remove_cart_item(request, product_id, cart_item_id):
     return redirect('cart')
 
 
+@login_required(login_url='login')
 def checkout(request, total=0, quantity=0, cart_items=None):
     tax = 0
     grand_total = 0

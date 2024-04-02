@@ -10,6 +10,8 @@ from django.core.mail import EmailMessage
 from django.http import HttpResponse
 
 from .models import Account
+from cart.models import Cart, CartItem
+from cart.views import _get_cart_id
 
 from .forms import RegistrationForm
 
@@ -74,6 +76,17 @@ def login(request):
         user = auth.authenticate(email=email, password=password)
 
         if user:
+            try:
+                cart = Cart.objects.get(cart_id=_get_cart_id(request))
+                is_cart_item_exists = CartItem.objects.filter(cart=cart).exists()
+                if is_cart_item_exists:
+                    cart_item = CartItem.objects.filter(cart=cart)
+                    for item in cart_item:
+                        item.user = user
+                        item.save()
+            except:
+                pass
+
             auth.login(request, user)
             messages.success(request, 'You are now logged in')
             return redirect('dashboard')
