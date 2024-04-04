@@ -36,7 +36,7 @@ class Order(models.Model):
     country = models.CharField(max_length=50)
     state = models.CharField(max_length=50)
     city = models.CharField(max_length=50)
-    order_note = models.TextField()
+    order_note = models.TextField(blank=True)
     order_total = models.FloatField()
     tax = models.FloatField()
     status = models.CharField(max_length=20, choices=STATUS, default='New')
