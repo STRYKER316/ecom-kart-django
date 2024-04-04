@@ -6,6 +6,7 @@ from django.shortcuts import render, redirect
 
 from .models import Order, Payment, OrderProduct
 from cart.models import CartItem
+from store.models import Product
 from .forms import OrderForm
 from ecom_kart.settings import RZP_KEY_ID, RZP_KEY_SECRET
 
@@ -52,11 +53,13 @@ def payments(request):
         order_product.variation.set(product_variation)
         order_product.save()
 
-    # Reduce the quantity of the sold products
-
+        # Reduce the quantity of the sold products
+        product = Product.objects.get(id=item.product_id)
+        product.stock -= item.quantity
+        product.save()
 
     # Clear the cart
-
+    CartItem.objects.filter(user=request.user).delete()
 
     # Send order emails
 
