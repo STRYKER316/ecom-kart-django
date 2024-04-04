@@ -141,6 +141,7 @@
     var url = "{% url 'payments' %}";
     var csrftoken = getCookie('csrftoken');
     var order_number = "{{ order.order_number }}";
+    var redirect_url = "{% url 'order_complete' %}";
 
     // Start --> RazorPay Payment Gateway Integration
     var options = {
@@ -156,10 +157,10 @@
             // alert(response.razorpay_order_id);
             // alert(response.razorpay_signature)
 
-            // // Wait for transaction processing
-            // const element = document.getElementById('rzp_payment_button');
-            // element.innerHTML = '';
-            // element.innerHTML = '<h4 class="text-center text-success"><i class="fa fa-spinner fa-spin"></i>Please Wait...</h4>';
+            // Wait for transaction processing
+            const element = document.getElementById('rzp_payment_button');
+            element.innerHTML = '';
+            element.innerHTML = '<h4 class="text-center text-success"><i class="fa fa-spinner fa-spin"></i>Please Wait...</h4>';
 
             // Send data to backend on successful transaction
             var transaction_id = response.razorpay_payment_id;
@@ -210,6 +211,10 @@
                 'payment_status': payment_status,
             }),
         })
+        .then((response) => response.json())
+        .then((data) => {
+            window.location.href = redirect_url + '?order_number=' + data.order_number + '&transaction_id=' + data.transaction_id;
+        });
     }
 
 </script>

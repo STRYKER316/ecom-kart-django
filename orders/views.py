@@ -5,6 +5,7 @@ import razorpay
 from django.shortcuts import render, redirect
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
+from django.http import JsonResponse
 
 from .models import Order, Payment, OrderProduct
 from cart.models import CartItem
@@ -75,8 +76,12 @@ def payments(request):
     send_email.send()
 
     # Send order number and transaction id back to sendData method via JsonResponse
+    data = {
+        'order_number': order.order_number,
+        'transaction_id': payment.payment_id,
+    }
 
-    return render(request, 'orders/payments.html')
+    return JsonResponse(data)
 
 
 def place_order(request, total=0, quantity=0):
@@ -155,3 +160,30 @@ def place_order(request, total=0, quantity=0):
             return render(request, 'orders/payments.html', context)
 
         return redirect('checkout')
+
+
+def order_complete(request):
+    order_number = request.GET.get('order_number')
+    transaction_id = request.GET.get('transaction_id')
+
+    try:
+        order = Order.objects.get(order_number=order_number, is_ordered=True)
+        ordered_products = OrderProduct.objects.filter(order_id=order.id)
+        payment = Payment.objects.get(payment_id=transaction_id)
+
+        sub_total = 0
+        for item in ordered_products:
+            sub_total += (item.product_price * item.quantity)
+
+        context = {
+            'order': order,
+            'ordered_products': ordered_products,
+            'order_number': order.order_number,
+            'transaction_id': payment.payment_id,
+            'payment': payment,
+            'sub_total': sub_total,
+        }
+        return render(request, 'orders/order_complete.html', context)
+
+    except (Payment.DoesNotExist, Order.DoesNotExist):
+        return redirect('home')
