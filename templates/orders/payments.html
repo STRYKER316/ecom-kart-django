@@ -31,7 +31,7 @@
                   <div class="card">
                     <h5 class="card-header">Payment Method</h5>
                     <div class="card-body">
-                      <p class="card-text">PayPal</p>
+                      <p class="card-text">Razorpay</p>
                     </div>
                   </div>
 
@@ -99,10 +99,13 @@
                             <dd class="text-right text-dark b"><strong>₹ {{ grand_total }}</strong></dd>
                         </dl>
                         <hr>
-                        <p class="text-center mb-3">
+                        <!-- <p class="text-center mb-3">
                             <img src="{% static './images/misc/payments.png' %}" height="26">
-                        </p>
-                        <a href="{% url 'checkout' %}" class="btn btn-primary btn-block"> Make Payment </a>
+                        </p> -->
+                        <div id="rzp_payment_button">
+                            <button id="rzp-button1" class="btn btn-danger w-100 p-2">Pay with Razorpay</button>
+                            <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+                        </div>
                     </div> <!-- card-body.// -->
                 </div> <!-- card.// -->
 
@@ -115,5 +118,100 @@
 
 </section>
 <!-- ========================= SECTION CONTENT END// ========================= -->
+
+<script>
+    // Generetae csrf token
+    function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Payment related data
+    var url = "{% url 'payments' %}";
+    var csrftoken = getCookie('csrftoken');
+    var order_number = "{{ order.order_number }}";
+
+    // Start --> RazorPay Payment Gateway Integration
+    var options = {
+        "key": "{{ RZP_KEY_ID }}", // Enter the Key ID generated from the Dashboard
+        "amount": "{{ rzp_amount }}", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+        "currency": "INR",
+        "name": "E-Com Kart", // Your business name
+        "description": "E-Com Kart Marketplace",
+        "image": "{% static './images/logo.png' %}",
+        "order_id": "{{ rzp_order_id }}", // Pass the `id` obtained in the response of Step 1
+        "handler": function (response){
+            // alert(response.razorpay_payment_id);
+            // alert(response.razorpay_order_id);
+            // alert(response.razorpay_signature)
+
+            // // Wait for transaction processing
+            // const element = document.getElementById('rzp_payment_button');
+            // element.innerHTML = '';
+            // element.innerHTML = '<h4 class="text-center text-success"><i class="fa fa-spinner fa-spin"></i>Please Wait...</h4>';
+
+            // Send data to backend on successful transaction
+            var transaction_id = response.razorpay_payment_id;
+            var payment_method = 'Razorpay';
+            var payment_status = 'Success';
+            sendTransactionData(transaction_id, payment_method, payment_status);
+        },
+        "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information, especially their phone number
+            "name": "{{ order.full_name }}", //your customer's name
+            "email": "{{ order.email }}",
+            "contact": "{{ order.phone }}"  //Provide the customer's phone number for better conversion rates
+        },
+        "notes": {
+            "address": "{{ order.full_address }}"
+        },
+        "theme": {
+            "color": "#007bff"
+        }
+    };
+    var rzp1 = new Razorpay(options);
+    rzp1.on('payment.failed', function (response){
+        alert(response.error.code);
+        alert(response.error.description);
+        alert(response.error.source);
+        alert(response.error.step);
+        alert(response.error.reason);
+        alert(response.error.metadata.order_id);
+        alert(response.error.metadata.payment_id);
+    });
+    document.getElementById('rzp-button1').onclick = function(e){
+        rzp1.open();
+        e.preventDefault();
+    }
+    // End --> RazorPay Payment Gateway Integration
+
+    // Send the transaction data to payment view for storing in the database
+    function sendTransactionData(transaction_id, payment_method, payment_status){
+        fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-type": "application/json",
+                "X-CSRFToken": csrftoken
+            },
+            body: JSON.stringify({
+                'order_number': order_number,
+                'transaction_id': transaction_id,
+                'payment_method': payment_method,
+                'payment_status': payment_status,
+            }),
+        })
+    }
+
+</script>
 
 {% endblock %}
