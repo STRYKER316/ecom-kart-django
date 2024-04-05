@@ -77,8 +77,39 @@
 
                 <header class="section-heading">
                     <h3>Customer Reviews </h3>
-
                 </header>
+
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <h5>Write your review</h5>
+                    <div>
+                        <!-- Rating Stars -->
+                        <label for="">How do you rate this product?</label>
+                        <br>
+                        <div class="rate">
+                            <input type="radio" name="rating" id="rating10" value="5.0" required /><label for="rating10" title="5.0"></label>
+                            <input type="radio" name="rating" id="rating09" value="4.5" required /><label for="rating09" title="4.5" class="half-star"></label>
+                            <input type="radio" name="rating" id="rating08" value="4.0" required /><label for="rating08" title="4.0"></label>
+                            <input type="radio" name="rating" id="rating07" value="3.5" required /><label for="rating07" title="3.5" class="half-star"></label>
+                            <input type="radio" name="rating" id="rating06" value="3.0" required /><label for="rating06" title="3.0"></label>
+                            <input type="radio" name="rating" id="rating05" value="2.5" required /><label for="rating05" title="2.5" class="half-star"></label>
+                            <input type="radio" name="rating" id="rating04" value="2.0" required /><label for="rating04" title="2.0"></label>
+                            <input type="radio" name="rating" id="rating03" value="1.5" required /><label for="rating03" title="1.5" class="half-star"></label>
+                            <input type="radio" name="rating" id="rating02" value="1.0" required /><label for="rating02" title="1.0"></label>
+                            <input type="radio" name="rating" id="rating01" value="0.5" required /><label for="rating01" title="0.5" class="half-star"></label>
+                        </div>
+                        <br>
+
+                        Review Title:
+                        <input type="text" class="form-control" name="subject">
+                        <br>
+                        Review Description:
+                        <textarea class="form-control" name="review" rows="4"></textarea>
+                        <br>
+                        <input type="submit" class="btn btn-primary" value="Submit Review">
+                    </div>
+                </form>
+                <br>
 
                 <article class="box mb-3">
                     <div class="icontext w-100">
