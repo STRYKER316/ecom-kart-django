@@ -19,8 +19,8 @@ from cart.views import _get_cart_id
 
 from .forms import RegistrationForm, UserForm, UserProfileForm
 
-# Create your views here.
 
+# User Registration
 def register(request):
     form = None
 
@@ -44,6 +44,12 @@ def register(request):
             )
             user.phone_number = phone_number
             user.save()
+
+            # User Profile Craetion
+            profile = UserProfile()
+            profile.user_id = user.id
+            profile.profile_picture = 'photos/profile_pictures/default.jpg'
+            profile.save()
 
             # User Activation
             current_site = get_current_site(request)
@@ -72,6 +78,7 @@ def register(request):
     return render(request, 'accounts/register.html', context)
 
 
+# User Login
 def login(request):
     if request.method == 'POST':
         email = request.POST['email']
@@ -139,6 +146,7 @@ def login(request):
     return render(request, 'accounts/login.html')
 
 
+# User Logout
 @login_required(login_url='login')
 def logout(request):
     auth.logout(request)
@@ -146,6 +154,7 @@ def logout(request):
     return redirect('login')
 
 
+# User Dashboard
 @login_required(login_url='login')
 def dashboard(request):
     orders = Order.objects.order_by('-created_at').filter(user_id=request.user.id, is_ordered=True)
@@ -160,6 +169,7 @@ def dashboard(request):
     return render(request, 'accounts/dashboard.html', context)
 
 
+# User Activation
 def activate(request, uidb64, token):
     try:
         uid = urlsafe_base64_decode(uidb64).decode()
@@ -178,6 +188,7 @@ def activate(request, uidb64, token):
     return redirect('register')
 
 
+# Forgot Password
 def forget_password(request):
     if request.method == 'POST':
         email = request.POST['email']
@@ -209,6 +220,7 @@ def forget_password(request):
     return render(request, 'accounts/forget_password.html')
 
 
+# Reset Password Validation
 def reset_password_validate(request, uidb64, token):
     try:
         uid = urlsafe_base64_decode(uidb64).decode()
@@ -226,6 +238,7 @@ def reset_password_validate(request, uidb64, token):
         return redirect('login')
 
 
+# Reset Password
 def reset_password(request):
     if request.method == 'POST':
         password = request.POST['password']
@@ -247,6 +260,7 @@ def reset_password(request):
     return render(request, 'accounts/reset_password.html')
 
 
+# My Orders
 @login_required(login_url='login')
 def my_orders(request):
     orders = Order.objects.filter(user=request.user, is_ordered=True).order_by('-created_at')
@@ -256,6 +270,7 @@ def my_orders(request):
     return render(request, 'accounts/my_orders.html', context)
 
 
+# Edit Profile
 @login_required(login_url='login')
 def edit_profile(request):
     userprofile = get_object_or_404(UserProfile, user=request.user)
