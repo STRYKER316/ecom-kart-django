@@ -251,3 +251,18 @@ def my_orders(request):
         'orders': orders
     }
     return render(request, 'accounts/my_orders.html', context)
+
+
+@login_required(login_url='login')
+def edit_profile(request):
+    user = Account.objects.get(pk=request.user.pk)
+
+    if request.method == 'POST':
+        user.first_name = request.POST['first_name']
+        user.last_name = request.POST['last_name']
+        user.phone_number = request.POST['phone_number']
+        user.save()
+        messages.success(request, 'Profile updated successfully')
+        return redirect('edit_profile')
+
+    return render(request, 'accounts/edit_profile.html', {'user': user})
