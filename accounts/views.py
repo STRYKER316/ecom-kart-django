@@ -14,7 +14,7 @@ import requests
 
 from .models import Account, UserProfile
 from cart.models import Cart, CartItem
-from orders.models import Order
+from orders.models import Order, OrderProduct
 from cart.views import _get_cart_id
 
 from .forms import RegistrationForm, UserForm, UserProfileForm
@@ -296,3 +296,21 @@ def edit_profile(request):
     }
 
     return render(request, 'accounts/edit_profile.html', context)
+
+
+# Order Detail
+@login_required(login_url='login')
+def order_detail(request, order_id):
+    order_detail = OrderProduct.objects.filter(order__order_number=order_id)
+    order = Order.objects.get(order_number=order_id)
+
+    sub_total = 0
+    for item in order_detail:
+        sub_total += item.product_price * item.quantity
+
+    context = {
+        'order_detail': order_detail,
+        'order': order,
+        'sub_total': sub_total,
+    }
+    return render(request, 'accounts/order_detail.html', context)
