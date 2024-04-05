@@ -13,6 +13,7 @@ import requests
 
 from .models import Account
 from cart.models import Cart, CartItem
+from orders.models import Order
 from cart.views import _get_cart_id
 
 from .forms import RegistrationForm
@@ -146,7 +147,14 @@ def logout(request):
 
 @login_required(login_url='login')
 def dashboard(request):
-    return render(request, 'accounts/dashboard.html')
+    orders = Order.objects.order_by('-created_at').filter(user_id=request.user.id, is_ordered=True)
+    orders_count = orders.count()
+
+    context = {
+        'orders_count': orders_count,
+    }
+
+    return render(request, 'accounts/dashboard.html', context)
 
 
 def activate(request, uidb64, token):
