@@ -298,6 +298,38 @@ def edit_profile(request):
     return render(request, 'accounts/edit_profile.html', context)
 
 
+# Change Password
+@login_required(login_url='login')
+def change_password(request):
+    # POST request
+    if request.method == 'POST':
+        current_password = request.POST['current_password']
+        new_password = request.POST['new_password']
+        confirm_password = request.POST['confirm_password']
+
+        user = Account.objects.get(email__exact=request.user.email)
+
+        if new_password == confirm_password:
+            success = user.check_password(current_password)
+
+            if success:
+                user.set_password(new_password)
+                user.save()
+                messages.success(request, 'Password updated successfully')
+                return redirect('change_password')
+
+            else:
+                messages.error(request, 'Please enter correct current password')
+                return redirect('change_password')
+
+        else:
+            messages.error(request, 'Passwords do not match')
+            return redirect('change_password')
+
+    # GET request
+    return render(request, 'accounts/change_password.html')
+
+
 # Order Detail
 @login_required(login_url='login')
 def order_detail(request, order_id):
