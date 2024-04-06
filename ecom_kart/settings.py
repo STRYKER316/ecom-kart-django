@@ -29,7 +29,7 @@ SECRET_KEY = config('SECRET_KEY', default='jkhksdgksdsadjasfdhasfdaskdatejasjdga
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['ecom-kart-app-env.eba-czdn253u.ap-south-1.elasticbeanstalk.com', '172.31.14.150']
 
 
 # Application definition
