@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 from decouple import config
 
@@ -23,7 +24,7 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-sadfgashjdgashjgdajkshd')
+SECRET_KEY = config('SECRET_KEY', default='jkhksdgksdsadjasfdhasfdaskdatejasjdgasjhdg')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
@@ -159,15 +160,15 @@ MESSAGE_TAGS = {
 DEFAULT_AUTO_FIELD='django.db.models.AutoField'
 
 # SMTP Configuration
-EMAIL_HOST = config('EMAIL_HOST')
-EMAIL_PORT = config('EMAIL_PORT', cast=int)
+EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
+EMAIL_PORT = config('EMAIL_PORT', cast=int, default=587)
 EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
-EMAIL_HOST_USER = config('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='stryker316.games@gmail.com')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='qplyhiusxlpasete')
 
 # Razorpay Configuration
-RZP_KEY_ID = config('RZP_KEY_ID')
-RZP_KEY_SECRET = config('RZP_KEY_SECRET')
+RZP_KEY_ID = config('RZP_KEY_ID', default='rzp_test_evy1s4bRqfaqfA')
+RZP_KEY_SECRET = config('RZP_KEY_SECRET', default='N0EXJa2eLUaW88wdauViDrAZ')
 
 # Allow RazorPay Pop-up
 SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin-allow-popups"
