@@ -155,6 +155,9 @@ MESSAGE_TAGS = {
     messages.ERROR: 'danger',
 }
 
+# Default primary key field type
+DEFAULT_AUTO_FIELD='django.db.models.AutoField'
+
 # SMTP Configuration
 EMAIL_HOST = config('EMAIL_HOST')
 EMAIL_PORT = config('EMAIL_PORT', cast=int)
