@@ -8,11 +8,11 @@ from cart.models import CartItem
 from cart.views import _get_cart_id
 from category.models import Category
 from orders.models import OrderProduct
-from .models import Product, ReviewRating
+from .models import Product, ReviewRating, ProductGallery
 from .forms import ReviewForm
 
 
-# Create your views here.
+# Store Page view
 def store(request, category_slug=None):
     category = None
     products = None
@@ -43,6 +43,7 @@ def store(request, category_slug=None):
     return render(request, 'store/store.html', context)
 
 
+# Product Detail view
 def product_detail(request, category_slug, product_slug):
     single_product = None
     in_cart = False
@@ -60,21 +61,24 @@ def product_detail(request, category_slug, product_slug):
     else:
         order_product = None
 
-
     # Get the reviews
     reviews = ReviewRating.objects.filter(product_id=single_product.id, status=True)
 
+    # Get product gallery
+    product_gallery = ProductGallery.objects.filter(product_id=single_product.id)
 
     context = {
         'single_product': single_product,
         'in_cart': in_cart,
         'order_product' : order_product,
         'reviews': reviews,
+        'product_gallery': product_gallery,
     }
 
     return render(request, 'store/product_detail.html', context)
 
 
+# Search view
 def search(request):
     if 'keyword' in request.GET:
         keyword = request.GET['keyword']
@@ -90,6 +94,7 @@ def search(request):
     return render(request, 'store/store.html', context)
 
 
+# Submit Review view
 def submit_review(request, product_id):
     url = request.META.get('HTTP_REFERER')
 
