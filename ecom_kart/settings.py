@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 
 from django.contrib.messages import constants as messages
 
@@ -22,10 +23,10 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'levalr40=&)%)m2hyf0)_q2$7ms7kyucsmq9(le9lrs2rlopro'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = []
 
@@ -44,6 +45,7 @@ INSTALLED_APPS = [
     'accounts',
     'store',
     'cart',
+    'orders',
 ]
 
 MIDDLEWARE = [
@@ -149,3 +151,17 @@ AUTH_USER_MODEL = 'accounts.Account'
 MESSAGE_TAGS = {
     messages.ERROR: 'danger',
 }
+
+# SMTP Configuration
+EMAIL_HOST = config('EMAIL_HOST')
+EMAIL_PORT = config('EMAIL_PORT', cast=int)
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+
+# Razorpay Configuration
+RZP_KEY_ID = config('RZP_KEY_ID')
+RZP_KEY_SECRET = config('RZP_KEY_SECRET')
+
+# Allow RazorPay Pop-up
+SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin-allow-popups"
