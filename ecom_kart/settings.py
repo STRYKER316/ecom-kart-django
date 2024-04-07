@@ -24,10 +24,10 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY', default='jkhksdgksdsadjasfdhasfdaskdatejasjdgasjhdg')
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=True, cast=bool)
+DEBUG = config('DEBUG', cast=bool)
 
 ALLOWED_HOSTS = ['ecom-kart-env.eba-cqky5dsz.ap-south-1.elasticbeanstalk.com', '172.31.10.140', 'localhost']
 
@@ -47,7 +47,9 @@ INSTALLED_APPS = [
     'store',
     'cart',
     'orders',
+    # external apps
     'admin_honeypot',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -142,16 +144,40 @@ USE_L10N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.1/howto/static-files/
+# # Static files (CSS, JavaScript, Images)
+# # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = '/static/'
+# STATIC_URL = '/static/'
 
-STATIC_ROOT = BASE_DIR/'static'
+# STATIC_ROOT = BASE_DIR/'static'
+
+# STATICFILES_DIRS = [
+#     'ecom_kart/static',
+# ]
+
+
+# AWS S3 Static Files Configuration
+AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = 'public-read'
+AWS_LOCATION = 'static'
 
 STATICFILES_DIRS = [
     'ecom_kart/static',
 ]
+STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+
+# AWS S3 Media Files Configuration
+DEFAULT_FILE_STORAGE = 'ecom_kart.media_storage.MediaStorage'
+
 
 
 # Media files Configuration
@@ -172,15 +198,15 @@ MESSAGE_TAGS = {
 DEFAULT_AUTO_FIELD='django.db.models.AutoField'
 
 # SMTP Configuration
-EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
-EMAIL_PORT = config('EMAIL_PORT', cast=int, default=587)
-EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
-EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='stryker316.games@gmail.com')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='qplyhiusxlpasete')
+EMAIL_HOST = config('EMAIL_HOST')
+EMAIL_PORT = config('EMAIL_PORT', cast=int)
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 # Razorpay Configuration
-RZP_KEY_ID = config('RZP_KEY_ID', default='rzp_test_evy1s4bRqfaqfA')
-RZP_KEY_SECRET = config('RZP_KEY_SECRET', default='N0EXJa2eLUaW88wdauViDrAZ')
+RZP_KEY_ID = config('RZP_KEY_ID')
+RZP_KEY_SECRET = config('RZP_KEY_SECRET')
 
 # Allow RazorPay Pop-up
 SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin-allow-popups"
