@@ -179,7 +179,6 @@ STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 DEFAULT_FILE_STORAGE = 'ecom_kart.media_storage.MediaStorage'
 
 
-
 # Media files Configuration
 
 MEDIA_URL = '/media/'
