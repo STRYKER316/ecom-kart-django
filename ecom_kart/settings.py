@@ -175,10 +175,6 @@ STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 
-# AWS S3 Media Files Configuration
-DEFAULT_FILE_STORAGE = 'ecom_kart.media_storage.MediaStorage'
-
-
 # Media files Configuration
 
 MEDIA_URL = '/media/'
@@ -186,8 +182,13 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR/'media'
 
 
+# AWS S3 Media Files Configuration
+DEFAULT_FILE_STORAGE = 'ecom_kart.media_storage.MediaStorage'
+
+
 # Custom User model
 AUTH_USER_MODEL = 'accounts.Account'
+
 
 MESSAGE_TAGS = {
     messages.ERROR: 'danger',
