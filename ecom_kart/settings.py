@@ -29,7 +29,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', cast=bool)
 
-ALLOWED_HOSTS = ['ecom-kart-app-env.eba-2mnthuer.ap-south-1.elasticbeanstalk.com', '*']
+ALLOWED_HOSTS = ['ecom-kart-app-env.eba-2mgas9nb.ap-south-1.elasticbeanstalk.com', '*']
 
 
 # Application definition
