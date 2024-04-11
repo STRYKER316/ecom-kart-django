@@ -19,4 +19,4 @@
 * AWS Route 53 - Domain Name Service
 
 ## Visit the website:
-*  [ecom-kart.com](https://ecom-kart.com)
+*  [ecom-kart-app-env.eba-2mgas9nb.ap-south-1.elasticbeanstalk.com](http://ecom-kart-app-env.eba-2mgas9nb.ap-south-1.elasticbeanstalk.com/)
